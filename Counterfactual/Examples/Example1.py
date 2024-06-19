@@ -53,3 +53,25 @@ print(cm)
 accuracy = accuracy_score(y_test, predictions)
 print("accuracy")
 print(accuracy)
+
+#generate counterfactual Explanation
+diceData = dice_ml.Data(dataframe=dataframe,continuous_features=[], outcome_name="Superamento_Corso")
+diceModel = dice_ml.Model(model=logisticRegression, backend="sklearn")
+exp = dice_ml.Dice(diceData, diceModel, method='random')
+
+query_instance = X_test[0:1]
+counterFactual = exp.generate_counterfactuals(query_instances=query_instance, total_CFs=2,desired_class="opposite")
+counterFactual.visualize_as_dataframe()
+
+#division into samples
+positive_samples = dataframe[dataframe["Superamento_Corso"] == 1].drop_duplicates("Id_Corso").sample(4)
+negative_samples = dataframe[dataframe["Superamento_Corso"] == 0].drop_duplicates("Id_Corso").sample(4)
+
+#generate counterfactual Explanation
+query_instance = pd.concat([positive_samples, negative_samples]).drop(columns="Superamento_Corso")
+counterFactual = exp.generate_counterfactuals(query_instances=query_instance, total_CFs=3,desired_class="opposite")
+counterFactual.visualize_as_dataframe()
+
+#global importance
+global_importance = exp.global_feature_importance(X_train[0:10], total_CFs=10, posthoc_sparsity_param=None, desired_class="opposite")
+print("Global importance",global_importance.summary_importance)

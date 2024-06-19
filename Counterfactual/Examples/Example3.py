@@ -6,6 +6,8 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 import dice_ml
+import numpy as np
+
 #create dataframe
 dataframe = pd.read_csv('Tabella_Corsi.csv')
 print(dataframe)
@@ -18,6 +20,7 @@ print(dataframe.head())
 #drop useless columns
 dataframe = dataframe.drop('VOTO', axis=1)
 dataframe = dataframe.drop('Subject Id', axis=1)
+dataframe.dropna()
 
 #create target 
 X = dataframe.drop(columns="Superamento_Corso")
@@ -52,3 +55,21 @@ print(cm)
 accuracy = accuracy_score(y_test, predictions)
 print("accuracy")
 print(accuracy)
+
+#inizialize DiCE
+diceData = dice_ml.Data(dataframe=dataframe,continuous_features=[], outcome_name="Superamento_Corso")
+diceModel = dice_ml.Model(model=KNNClassifier, backend="sklearn")
+exp = dice_ml.Dice(diceData, diceModel, method="random")
+
+#division into samples
+positive_samples = dataframe[dataframe["Superamento_Corso"] == 1].drop_duplicates("Id_Corso").sample(4)
+negative_samples = dataframe[dataframe["Superamento_Corso"] == 0].drop_duplicates("Id_Corso").sample(4)
+
+#generate counterfactual Explanation
+query_instance = pd.concat([positive_samples, negative_samples]).drop(columns="Superamento_Corso")
+counterFactual = exp.generate_counterfactuals(query_instances=query_instance, total_CFs=3,desired_class="opposite")
+counterFactual.visualize_as_dataframe()
+
+#global importance
+global_importance = exp.global_feature_importance(X_train[0:10], total_CFs=10, posthoc_sparsity_param=None, desired_class="opposite")
+print("Global importance",global_importance.summary_importance)
