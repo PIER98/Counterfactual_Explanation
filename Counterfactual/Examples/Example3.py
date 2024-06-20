@@ -58,7 +58,7 @@ print(accuracy)
 #inizialize DiCE
 diceData = dice_ml.Data(dataframe=dataframe,continuous_features=[], outcome_name="Superamento_Corso")
 diceModel = dice_ml.Model(model=KNNClassifier, backend="sklearn")
-exp = dice_ml.Dice(diceData, diceModel, method="kdtree")
+exp = dice_ml.Dice(diceData, diceModel, method="random")
 
 #division into samples
 positive_samples = dataframe[dataframe["Superamento_Corso"] == 1].drop_duplicates("Id_Corso").sample(4)
