@@ -54,9 +54,6 @@ accuracy = accuracy_score(y_test, predictions)
 print("accuracy")
 print(accuracy)
 
-print("Persone totali che hanno superato l' esame")
-print(dataframe["Superamento_Corso"])
-
 superati = dataframe[dataframe["Superamento_Corso"] == 1].drop_duplicates("Id_Corso").sample(4)
 non_superati = dataframe[dataframe["Superamento_Corso"] == 0].drop_duplicates("Id_Corso").sample(4)
 

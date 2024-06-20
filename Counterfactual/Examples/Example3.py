@@ -6,7 +6,6 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 import dice_ml
-import numpy as np
 
 #create dataframe
 dataframe = pd.read_csv('Tabella_Corsi.csv')
@@ -59,7 +58,7 @@ print(accuracy)
 #inizialize DiCE
 diceData = dice_ml.Data(dataframe=dataframe,continuous_features=[], outcome_name="Superamento_Corso")
 diceModel = dice_ml.Model(model=KNNClassifier, backend="sklearn")
-exp = dice_ml.Dice(diceData, diceModel, method="random")
+exp = dice_ml.Dice(diceData, diceModel, method="kdtree")
 
 #division into samples
 positive_samples = dataframe[dataframe["Superamento_Corso"] == 1].drop_duplicates("Id_Corso").sample(4)

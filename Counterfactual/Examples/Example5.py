@@ -71,3 +71,7 @@ counterFactual.visualize_as_dataframe()
 #global importance
 global_importance = exp.global_feature_importance(X_train[0:10], total_CFs=10, posthoc_sparsity_param=None, desired_class="opposite")
 print("Global importance",global_importance.summary_importance)
+
+print("QUERY DATA")
+print(positive_samples)
+print(negative_samples)
